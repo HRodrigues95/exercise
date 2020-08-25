@@ -47,6 +47,7 @@ class Navigation extends React.Component {
     const url = 'https://accounts.spotify.com/authorize?' +
       "client_id=" + CLIENTID +
       "&response_type=token" +
+      "&scope=user-read-private%20user-read-email"+
       "&redirect_uri=" + encodeURI(REDIRECT_URI);
     
     window.location = url;

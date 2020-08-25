@@ -13,7 +13,7 @@ class Profile extends React.Component {
     const res = await fetch("https://api.spotify.com/v1/me", {
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "*",
         "Authoriaztion" : "Bearer "+token
       }
     });
