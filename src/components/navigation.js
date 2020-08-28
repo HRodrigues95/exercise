@@ -1,63 +1,70 @@
 import React from 'react';
 import { NavLink as RouterNavLink } from "react-router-dom";
-import { Nav, Navbar } from "react-bootstrap";
-import queryString from 'query-string';
+import { Nav, Navbar, Dropdown } from "react-bootstrap";
 
 import LoginBtn from "./login"
 import LogoutBtn from "./logout"
 
-function LoginoutBtn(props) {
-  console.log(props);
-  return (
-    <Nav className="justify-content-end">
-      {
-        props.isLog ? <LogoutBtn onLogout={props.onLogout} /> : <LoginBtn onLogin={props.onLogin} />
-      }
-    </Nav>
-  );
+import {Login, Logout, updateToken, hasToken} from "../helper"
+
+function SessionBtns(props) {
+  if (props.state.isOn) {
+    return (
+      <Nav className="justify-content-end">
+        <LogoutBtn onLogout={props.onLogout}/>
+      </Nav>
+    );
+  }
+  else {
+    return (
+      <Nav className="justify-content-end">
+        <LoginBtn onLogin={props.onLogin} />
+      </Nav>
+    );
+  }
+}
+
+function UserBtns(props) {
+  if (props.state.isOn) {
+    return (
+      <Nav className="justify-content-end">
+        <Dropdown>
+          <Dropdown.Toggle variant="secundary">
+            User
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item href="/me"> Profile </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </Nav>
+    );
+  }
+  else return "";
 }
 
 class Navigation extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoggedIn: false, 
+      isOn : false
     }
     this.handleLogout = this.handleLogout.bind(this);
   }
 
   componentDidMount() {
-    if (window.location.hash !== "" && window.location.hash !== null){
-      localStorage.setItem("token", JSON.stringify(queryString.parse(window.location.hash)))
-      this.setState({
-        isLoggedIn: true,
-      });
-    }
-    else if (localStorage.getItem("token")) {
-      this.setState({
-        isLoggedIn: true,
-      });
-    }
+    updateToken()
+    const val = hasToken();
+    this.setState({
+      isOn: val,
+    });
   }
 
   handleLogin() {
-    const CLIENTID     = "60ffd175460c4454a85c361500ace5a3";
-    const REDIRECT_URI = "http://localhost:3000/"
-
-    const url = 'https://accounts.spotify.com/authorize?' +
-      "client_id=" + CLIENTID +
-      "&response_type=token" +
-      "&scope=user-read-private%20user-read-email"+
-      "&redirect_uri=" + encodeURI(REDIRECT_URI);
-    
-    window.location = url;
+    Login();
   }
 
   handleLogout() {
-    localStorage.removeItem("token");
-    this.setState({
-      isLoggedIn: false,
-    });
+    Logout();
   }
 
   render() {
@@ -71,30 +78,11 @@ class Navigation extends React.Component {
             activeClassName="router-link-exact-active"
           >
             Home
-          </Nav.Link>
-          <Nav.Link
-            as={RouterNavLink}
-            to="/songs"
-            exact
-            activeClassName="router-link-exact-active"
-          >
-            Songs
-          </Nav.Link>
+          </Nav.Link> 
         </Nav>
         <Nav className="justify-content-end">
-          {
-            this.state.isLoggedIn ? 
-              <Nav.Link
-                as={RouterNavLink}
-                to="/me"
-                exact activeClassName="router-link-exact-active"
-              >
-                Profile
-              </Nav.Link>
-              : ""
-          }
-          
-          <LoginoutBtn isLog={this.state.isLoggedIn} onLogin={this.handleLogin} onLogout={this.handleLogout}/>
+          <UserBtns state={this.state} />
+          <SessionBtns state={this.state} onLogin={this.handleLogin} onLogout={this.handleLogout}/>
         </Nav>
       </Navbar>
     );

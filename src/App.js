@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 
 import { Route, Switch } from "react-router-dom";
 import { Container     } from "react-bootstrap";
@@ -9,9 +8,7 @@ import './App.css';
 import Navigation from "./components";
 
 //Views
-import Home from "./home";
-import Songs from "./song";
-import Profile from "./profile";
+import { Home, Profile,Song, Artist, Redirect } from "./Views";
 
 function App() {
   return (
@@ -20,8 +17,10 @@ function App() {
       <Container className="flex-grow-1 mt-5">
         <Switch>
           <Route exact path="/" component={Home}></Route>
-          <Route path="/songs" component={Songs}></Route>
+          <Route exact path="/song/:id" component={Song}></Route>
+          <Route exact path="/artist/:id" component={Artist}></Route>
           <Route path="/me" component={Profile}></Route>
+          <Route path="/login" component={Redirect}></Route>
         </Switch>
       </Container>
     </div>
