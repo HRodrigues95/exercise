@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Image, Badge, Button, Form, ButtonGroup, Breadcrumb } from 'react-bootstrap'
+import { Container, Row, Col, Image, Badge, Button, Form, ButtonGroup, Breadcrumb, Alert} from 'react-bootstrap'
 import { getUserInfo, getUserplaylist, createPlaylist } from '../helper';
 import Playlist from './playlist';
 
@@ -26,6 +26,7 @@ class Profile extends React.Component {
       userplay: up,
       form: false,
       plname: "",
+      success: false,
     });
   }
 
@@ -53,6 +54,7 @@ class Profile extends React.Component {
         userplay: up,
         form: false,
         plname: "",
+        success: true,
       });
     }
   }
@@ -127,6 +129,21 @@ class Profile extends React.Component {
     return user;
   }
 
+  ShowSuccess() {
+    let res = null;
+    if (this.state.success) {
+      res = (
+        <Alert variant="success" dismissible onClose={() => { this.setState({ success: false }); }} >
+          <Alert.Heading>Success!</Alert.Heading>
+          <p>
+            Playlist was created with success!
+          </p>
+        </Alert>
+      );
+    }
+    return res;
+  }
+
   render() {
     let form = null;
     let playlist = null;
@@ -143,10 +160,8 @@ class Profile extends React.Component {
         {this.UserInformation()}
         <Container>
           <Row fluid className="justify-content-md-center">
-           
-          </Row>
-          <Row fluid className="justify-content-md-center">
             {form}
+            {this.ShowSuccess()}
           </Row>
           <Row>
             <Col md={2}>

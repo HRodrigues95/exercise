@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, ListGroup, Nav, Button, Modal, Form, Badge } from 'react-bootstrap'
+import { Container, Row, Col, ListGroup, Nav, Button, Modal, Form, Badge, Alert } from 'react-bootstrap'
 
 import Artist from './artist';
 import Album from './album';
@@ -16,6 +16,7 @@ class Song extends React.Component {
       show: false,
       playlists: [],
       selplayls: [],
+      alrt: false,
     };
 
     this.handleShow = this.handleShow.bind(this);
@@ -30,7 +31,6 @@ class Song extends React.Component {
       this.setState({
         small: false ,
         song: objct,
-        
       });
     }
     else {
@@ -82,10 +82,13 @@ class Song extends React.Component {
   async handleAdd() {
     const cplayl = this.state.selplayls;
     const song = this.state.song;
-    await addSongtoPlaylist(cplayl,song.uri)
-    this.setState({
-      show:false
-    });
+    const res = await addSongtoPlaylist(cplayl, song.uri)
+    if (res) {
+      this.setState({
+        show: false,
+        alrt: true,
+      });
+    }
   }
 
   ListArtist() {
@@ -150,6 +153,21 @@ class Song extends React.Component {
     );
   }
 
+  ShowSuccess() {
+    let res = null;
+    if (this.state.alrt) {
+      res = (
+        <Alert variant="success" dismissible onClose={() => { this.setState({ alrt: false }); }} >
+          <Alert.Heading>Success!</Alert.Heading>
+          <p>
+            Song was added with success to selected playlists
+          </p>
+        </Alert>
+      );
+    }
+    return res;
+  }
+
   SmallInfo() {
     let colArtists = null;
     let BtnModal = null;
@@ -180,6 +198,7 @@ class Song extends React.Component {
           </Col>
           {colArtists}
           {BtnModal}
+          {this.ShowSuccess()}
         </Row>
       </ListGroup.Item>
     );
@@ -192,6 +211,7 @@ class Song extends React.Component {
           <h1>{this.state.song.name}</h1>
           <Button variant="primary" onClick={this.handleShow} > Add</Button> 
           {this.createModal()}
+          {this.ShowSuccess()}
         </Row>
         <Row>
           <Col>
